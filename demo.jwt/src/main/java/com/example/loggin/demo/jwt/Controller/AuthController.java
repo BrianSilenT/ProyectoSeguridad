@@ -3,7 +3,10 @@ package com.example.loggin.demo.jwt.Controller;
 import com.example.loggin.demo.jwt.Component.JwtUtil;
 import com.example.loggin.demo.jwt.DTO.AuthRequest;
 import com.example.loggin.demo.jwt.DTO.AuthResponse;
+import com.example.loggin.demo.jwt.DTO.RegisterRequest;
+import com.example.loggin.demo.jwt.Models.Usuario;
 import com.example.loggin.demo.jwt.Security.CustomUserDetailsService;
+import com.example.loggin.demo.jwt.Services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +33,9 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
         try {
@@ -49,4 +55,17 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<Usuario> register(@RequestBody RegisterRequest request) {
+        Usuario usuario = new Usuario();
+        usuario.setUsername(request.getUsername());
+        usuario.setPassword(request.getPassword());
+        usuario.setRole(request.getRole());
+        usuario.setEnabled(true);
+
+        Usuario saved = usuarioService.save(usuario);
+        return ResponseEntity.ok(saved);
+    }
+
 }
